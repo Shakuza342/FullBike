@@ -1,0 +1,117 @@
+﻿@model IEnumerable<FullBike.Models.PagoNomina>
+@{
+    ViewBag.Title = "Pagos de Nómina - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-money-bill-wave"></i> Pagos de Nómina</h2>
+            <p>Gestión de pagos y liquidaciones de empleados</p>
+        </div>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> @TempData["Mensaje"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            </div>
+        }
+
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Historial de Pagos</h3>
+            <div>
+                <a href="@Url.Action("Index", "Empleados")" class="btn btn-info">
+                    <i class="fas fa-users"></i> Ir a Empleados
+                </a>
+                <a href="@Url.Action("Dashboard", "Home")" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center" style="padding: 3rem;">
+                <i class="fas fa-money-bill-wave" style="font-size: 4rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                <h4 style="color: #6c757d;">No hay pagos de nómina registrados</h4>
+                <p>Los pagos aparecerán aquí cuando sean creados desde la sección de empleados.</p>
+            </div>
+        }
+        else
+        {
+            <table class="table table-nomina">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Empleado</th>
+                        <th>Periodo</th>
+                        <th>Fecha Pago</th>
+                        <th>Devengado</th>
+                        <th>Deducciones</th>
+                        <th>Neto</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pago in Model)
+                    {
+                        <tr>
+                            <td>@pago.Id</td>
+                            <td>
+                                <strong>@(pago.Empleado?.NombreCompleto ?? "N/A")</strong>
+                                <br>
+                                <small class="text-muted">@(pago.Empleado?.Cargo ?? "N/A")</small>
+                            </td>
+                            <td>
+                                @pago.PeriodoInicio.ToString("dd/MM/yyyy") -
+                                @pago.PeriodoFin.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                            <td class="monto-positivo">$@pago.TotalDevengado.ToString("N0")</td>
+                            <td class="monto-negativo">$@pago.TotalDeducciones.ToString("N0")</td>
+                            <td><strong>$@pago.NetoAPagar.ToString("N0")</strong></td>
+                            <td>
+                                @if (pago.Estado == "Pagado")
+                                {
+                                    <span class="estado-pagado">@pago.Estado</span>
+                                }
+                                else if (pago.Estado == "Pendiente")
+                                {
+                                    <span class="estado-pendiente">@pago.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="estado-anulado">@pago.Estado</span>
+                                }
+                            </td>
+                            <td class="actions">
+                                <a href="@Url.Action("DetallesPago", "Nomina", new { id = pago.Id })" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

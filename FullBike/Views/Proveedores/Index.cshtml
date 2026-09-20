@@ -1,0 +1,99 @@
+﻿@model IEnumerable<FullBike.Models.Proveedor>
+@{
+    ViewBag.Title = "Proveedores - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-truck"></i> Gestión de Proveedores</h2>
+            <p>Administra los proveedores y relaciones comerciales</p>
+        </div>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> @TempData["Mensaje"]
+            </div>
+        }
+
+        <div class="table-container">
+            <div class="table-header">
+                <h3>Lista de Proveedores</h3>
+                <div>
+                    <a href="@Url.Action("Create", "Proveedores")" class="btn">
+                        <i class="fas fa-plus"></i> Nuevo Proveedor
+                    </a>
+                    <a href="@Url.Action("Dashboard", "Home")" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Razón Social</th>
+                        <th>Contacto</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>NIT</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var proveedor in Model)
+                    {
+                        <tr>
+                            <td>@proveedor.Id</td>
+                            <td>
+                                <strong>@proveedor.RazonSocial</strong>
+                                @if (!string.IsNullOrEmpty(proveedor.Direccion))
+                                {
+                                    <br><small class="text-muted">@proveedor.Direccion</small>
+                                }
+                            </td>
+                            <td>@proveedor.Contacto</td>
+                            <td>@proveedor.Telefono</td>
+                            <td>@proveedor.Email</td>
+                            <td>@proveedor.Nit</td>
+                            <td>
+                                @if (proveedor.Activo)
+                                {
+                                    <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                        <i class="fas fa-check-circle"></i> Activo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                        <i class="fas fa-times-circle"></i> Inactivo
+                                    </span>
+                                }
+                            </td>
+                            <td class="actions">
+                                <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Id })" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="@Url.Action("Delete", "Proveedores", new { id = proveedor.Id })" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<FullBike.Models.Descuento>
+@{
+    ViewBag.Title = "Descuentos";
+}
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <h1><i class="fas fa-tags"></i> Descuentos</h1>
+            <p>Administra promociones y ofertas</p>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Create")" class="btn btn-success"><i class="fas fa-plus"></i> Nuevo descuento</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    <div class="card">
+        <div class="card-body">
+            <table class="data-table" id="tablaDescuentos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Vigencia</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model)
+                    {
+                        <tr>
+                            <td>@d.Nombre</td>
+                            <td>@(d.TipoDescuento == "Porcentaje" ? "Porcentaje" : "Monto fijo")</td>
+                            <td>@(d.TipoDescuento == "Porcentaje" ? d.Valor + "%" : d.Valor.ToString("C0"))</td>
+                            <td>@d.FechaInicio.ToString("dd/MM/yyyy") - @(d.FechaFin?.ToString("dd/MM/yyyy") ?? "Indefinido")</td>
+                            <td>
+                                <button class="btn-toggle-estado" data-id="@d.Id" data-activo="@d.Activo.ToString().ToLower()" style="background: @(d.Activo ? "#28a745" : "#dc3545"); color: white; border: none; padding: 4px 12px; border-radius: 20px;">
+                                    @(d.Activo ? "Activo" : "Inactivo")
+                                </button>
+                            </td>
+                            <td class="actions">
+                                <a href="@Url.Action("Details", new { id = d.Id })" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                <a href="@Url.Action("Edit", new { id = d.Id })" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                <a href="@Url.Action("Delete", new { id = d.Id })" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.btn-toggle-estado').click(function() {
+            var btn = $(this);
+            var id = btn.data('id');
+            $.post('@Url.Action("ToggleActivo", "Descuentos")', { id: id }, function(data) {
+                if (data.success) {
+                    if (data.activo) {
+                        btn.text('Activo').css('background', '#28a745');
+                        btn.data('activo', 'true');
+                    } else {
+                        btn.text('Inactivo').css('background', '#dc3545');
+                        btn.data('activo', 'false');
+                    }
+                } else {
+                    alert('Error al cambiar estado');
+                }
+            }).fail(function() { alert('Error de conexión'); });
+        });
+    });
+</script>

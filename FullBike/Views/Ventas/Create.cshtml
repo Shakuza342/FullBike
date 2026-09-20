@@ -1,0 +1,266 @@
+﻿@{
+    ViewBag.Title = "Nueva Venta";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-cart-plus"></i> Nueva Venta</h1>
+        <a href="@Url.Action("Index")" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="ventaForm" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Cliente *</label>
+                            <select name="clienteId" id="clienteId" class="form-control" required>
+                                <option value="">-- Seleccione --</option>
+                                @foreach (var cliente in ViewBag.Clientes)
+                                {
+                                    <option value="@cliente.Value">@cliente.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Empleado *</label>
+                            <select name="empleadoId" id="empleadoId" class="form-control" required>
+                                <option value="">-- Seleccione --</option>
+                                @foreach (var emp in ViewBag.Empleados)
+                                {
+                                    <option value="@emp.Value">@emp.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <h4><i class="fas fa-boxes"></i> Productos</h4>
+                <div id="productosContainer">
+                    <div class="producto-row row g-2 mb-2 align-items-center">
+                        <div class="col-md-5">
+                            <select name="repuestoIds" class="form-control producto-select" required>
+                                <option value="">-- Seleccione producto --</option>
+                                @foreach (var prod in ViewBag.Repuestos)
+                                {
+                                    <option value="@prod.Id" data-precio="@prod.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                                        @prod.Nombre
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" name="cantidades" class="form-control cantidad" placeholder="Cantidad" min="1" value="1" required />
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" name="precios" class="form-control precio" readonly placeholder="0.00" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <button type="button" class="btn btn-danger btn-sm eliminar-fila"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" id="agregarProductoBtn">
+                    <i class="fas fa-plus"></i> Agregar producto
+                </button>
+
+                <hr />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Descuento (opcional)</label>
+                            <select name="descuentoId" id="descuentoId" class="form-control">
+                                <option value="">-- Sin descuento --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Método de pago *</label>
+                            <select name="metodoPago" class="form-control" required>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta Débito">Tarjeta Débito</option>
+                                <option value="Tarjeta Crédito">Tarjeta Crédito</option>
+                                <option value="Transferencia">Transferencia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observaciones</label>
+                            <textarea name="observaciones" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5>Resumen de la venta</h5>
+                                <table class="table table-sm">
+                                    <tr><td>Subtotal</td><td class="text-end"><span id="subtotal">$0</span></td></tr>
+                                    <tr><td>IVA (19%)</td><td class="text-end"><span id="iva">$0</span></td></tr>
+                                    <tr><td>Descuento</td><td class="text-end"><span id="descuentoValor">$0</span></td></tr>
+                                    <tr><td>Retención</td><td class="text-end"><span id="retencion">$0</span></td></tr>
+                                    <tr class="table-active"><td><strong>Total a pagar</strong></td><td class="text-end"><strong><span id="total">$0</span></strong></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions mt-4">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Registrar venta</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let descuentoSeleccionadoMonto = 0;
+
+    function formatearNumero(num) { return num.toLocaleString('es-CO'); }
+
+    function actualizarTotales() {
+        let subtotal = 0;
+        document.querySelectorAll('#productosContainer .producto-row').forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
+            const precio = parseFloat(select.options[select.selectedIndex]?.getAttribute('data-precio') || '0');
+            subtotal += cantidad * precio;
+        });
+        const iva = subtotal * 0.19;
+        const totalConDesc = subtotal + iva - descuentoSeleccionadoMonto;
+        let retencion = totalConDesc > 5000000 ? totalConDesc * 0.035 : (totalConDesc > 1000000 ? totalConDesc * 0.025 : 0);
+        const total = totalConDesc - retencion;
+
+        document.getElementById('subtotal').innerText = '$' + formatearNumero(subtotal);
+        document.getElementById('iva').innerText = '$' + formatearNumero(iva);
+        document.getElementById('descuentoValor').innerText = '$' + formatearNumero(descuentoSeleccionadoMonto);
+        document.getElementById('retencion').innerText = '$' + formatearNumero(retencion);
+        document.getElementById('total').innerText = '$' + formatearNumero(total);
+    }
+
+    function cargarDescuentos() {
+        const clienteId = document.getElementById('clienteId').value;
+        let subtotal = 0;
+        document.querySelectorAll('#productosContainer .producto-row').forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
+            const precio = parseFloat(select.options[select.selectedIndex]?.getAttribute('data-precio') || '0');
+            subtotal += cantidad * precio;
+        });
+        if (clienteId && subtotal > 0) {
+            fetch(`/Descuentos/GetDescuentosDisponibles?clienteId=${clienteId}&subtotal=${subtotal}`)
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('descuentoId');
+                    select.innerHTML = '<option value="">-- Sin descuento --</option>';
+                    data.forEach(d => {
+                        const option = document.createElement('option');
+                        option.value = d.Id;
+                        option.setAttribute('data-monto', d.MontoAplicado);
+                        option.textContent = `${d.Nombre} - ${d.TipoDescuento === 'Porcentaje' ? d.Valor + '%' : '$' + formatearNumero(d.Valor)} (Ahorro: $${formatearNumero(d.MontoAplicado)})`;
+                        select.appendChild(option);
+                    });
+                    descuentoSeleccionadoMonto = 0;
+                    actualizarTotales();
+                }).catch(err => console.error('Error al cargar descuentos:', err));
+        }
+    }
+
+    function agregarProducto() {
+        const container = document.getElementById('productosContainer');
+        const original = container.children[0];
+        const clone = original.cloneNode(true);
+        clone.querySelectorAll('input, select').forEach(el => el.value = '');
+        clone.querySelector('.cantidad').value = '1';
+        clone.querySelector('.precio').value = '';
+        container.appendChild(clone);
+        actualizarTotales();
+        cargarDescuentos();
+    }
+
+    function eliminarFila(btn) {
+        const container = document.getElementById('productosContainer');
+        if (container.children.length > 1) {
+            btn.closest('.producto-row').remove();
+            actualizarTotales();
+            cargarDescuentos();
+        } else alert('Debe haber al menos un producto');
+    }
+
+    function ajustarNombresIndices() {
+        document.querySelectorAll('#productosContainer .producto-row').forEach((row, idx) => {
+            const select = row.querySelector('select');
+            const cantidad = row.querySelector('input[type="number"]');
+            const precio = row.querySelector('input[name="precios"]');
+            if (select) select.name = `repuestoIds[${idx}]`;
+            if (cantidad) cantidad.name = `cantidades[${idx}]`;
+            if (precio) precio.name = `precios[${idx}]`;
+        });
+    }
+
+    // 🔧 Forzar que los precios se tomen desde data-precio justo antes de enviar
+    function validarPrecios() {
+        document.querySelectorAll('#productosContainer .producto-row').forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const precio = parseFloat(select.options[select.selectedIndex]?.getAttribute('data-precio')) || 0;
+            const inputPrecio = row.querySelector('input[name="precios"]');
+            if (precio > 0) {
+                inputPrecio.value = precio.toFixed(2);
+            } else {
+                inputPrecio.value = '0';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        actualizarTotales();
+        document.getElementById('agregarProductoBtn').addEventListener('click', agregarProducto);
+        document.getElementById('productosContainer').addEventListener('click', (e) => {
+            if (e.target.classList.contains('eliminar-fila') || e.target.parentElement.classList.contains('eliminar-fila')) {
+                const btn = e.target.classList.contains('eliminar-fila') ? e.target : e.target.parentElement;
+                eliminarFila(btn);
+            }
+        });
+        document.getElementById('productosContainer').addEventListener('change', (e) => {
+            if (e.target.classList.contains('producto-select')) {
+                const row = e.target.closest('.producto-row');
+                const precio = e.target.options[e.target.selectedIndex]?.getAttribute('data-precio');
+                row.querySelector('.precio').value = precio ? parseFloat(precio).toFixed(2) : '0.00';
+                actualizarTotales();
+                cargarDescuentos();
+            }
+        });
+        document.getElementById('productosContainer').addEventListener('input', (e) => {
+            if (e.target.classList.contains('cantidad')) {
+                actualizarTotales();
+                cargarDescuentos();
+            }
+        });
+        document.getElementById('clienteId').addEventListener('change', cargarDescuentos);
+        document.getElementById('descuentoId').addEventListener('change', function () {
+            descuentoSeleccionadoMonto = parseFloat(this.options[this.selectedIndex]?.getAttribute('data-monto')) || 0;
+            actualizarTotales();
+        });
+        document.getElementById('ventaForm').addEventListener('submit', (e) => {
+            ajustarNombresIndices();
+            validarPrecios();  // 👈 clave: asigna los precios justo antes de enviar
+        });
+    });
+</script>

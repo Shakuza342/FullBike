@@ -1,0 +1,286 @@
+﻿@model FullBike.Models.LiquidacionContrato
+@{
+    ViewBag.Title = "Liquidar Contrato - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-file-contract"></i> Liquidar Contrato</h2>
+            <p>Liquidación para: <strong>@Model.Empleado.NombreCompleto</strong></p>
+            <p><strong>Salario Base:</strong> $@Model.Empleado.SalarioBase.ToString("N0")</p>
+            <p><strong>Meses Trabajados:</strong> @Model.Empleado.MesesTrabajados</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            </div>
+        }
+
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+        <div class="form-container">
+            @using (Html.BeginForm("LiquidarContrato", "Nomina", FormMethod.Post, new { @class = "form", id = "liquidacionForm" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.EmpleadoId)
+                @Html.HiddenFor(model => model.SalarioPendiente)
+                @Html.HiddenFor(model => model.VacacionesPendientes)
+                @Html.HiddenFor(model => model.Cesantias)
+                @Html.HiddenFor(model => model.InteresesCesantias)
+                @Html.HiddenFor(model => model.PrimaServicios)
+                @Html.HiddenFor(model => model.Indemnizacion)
+                @Html.HiddenFor(model => model.TotalLiquidacion)
+                @Html.HiddenFor(model => model.SaludDeducir)
+                @Html.HiddenFor(model => model.PensionDeducir)
+                @Html.HiddenFor(model => model.NetoAPagar)
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FechaLiquidacion)
+                        @Html.TextBoxFor(model => model.FechaLiquidacion, "{0:yyyy-MM-dd}", new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            required = "required",
+                            id = "FechaLiquidacion"
+                        })
+                        @Html.ValidationMessageFor(model => model.FechaLiquidacion, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TipoSalida)
+                        @Html.DropDownListFor(model => model.TipoSalida, new SelectList(new[] {
+                            "Renuncia", "Despido", "TerminaciónContrato"
+                        }), "Seleccionar tipo", new
+                                {
+                            @class = "form-control",
+                            required = "required",
+                            id = "TipoSalida"
+                        })
+                        @Html.ValidationMessageFor(model => model.TipoSalida, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- Cálculos de liquidación -->
+                <div class="liquidacion-section">
+                    <h4><i class="fas fa-calculator"></i> Cálculos de Liquidación</h4>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Salario Pendiente</label>
+                            @Html.TextBoxFor(model => model.SalarioPendiente, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "SalarioPendienteDisplay"
+                            })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vacaciones Pendientes</label>
+                            @Html.TextBoxFor(model => model.VacacionesPendientes, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "VacacionesPendientesDisplay"
+                            })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cesantías</label>
+                            @Html.TextBoxFor(model => model.Cesantias, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "CesantiasDisplay"
+                            })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Intereses Cesantías</label>
+                            @Html.TextBoxFor(model => model.InteresesCesantias, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "InteresesCesantiasDisplay"
+                            })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Prima de Servicios</label>
+                            @Html.TextBoxFor(model => model.PrimaServicios, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "PrimaServiciosDisplay"
+                            })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Indemnización</label>
+                            @Html.TextBoxFor(model => model.Indemnizacion, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "IndemnizacionDisplay"
+                            })
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total liquidación -->
+                <div class="liquidacion-total">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><strong>Total Liquidación</strong></label>
+                            @Html.TextBoxFor(model => model.TotalLiquidacion, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                style = "font-size: 1.3rem; font-weight: bold; background-color: #e8f5e8;",
+                                id = "TotalLiquidacionDisplay"
+                            })
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deducciones -->
+                <div class="calculation-section">
+                    <h4><i class="fas fa-minus-circle"></i> Deducciones</h4>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Salud (4%)</label>
+                            @Html.TextBoxFor(model => model.SaludDeducir, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "SaludDeducirDisplay"
+                            })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pensión (4%)</label>
+                            @Html.TextBoxFor(model => model.PensionDeducir, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                id = "PensionDeducirDisplay"
+                            })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RetencionFuente)
+                            @Html.TextBoxFor(model => model.RetencionFuente, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                placeholder = "0.00",
+                                id = "RetencionFuente",
+                                value = "0"
+                            })
+                            @Html.ValidationMessageFor(model => model.RetencionFuente, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label><strong>Neto a Pagar</strong></label>
+                            @Html.TextBoxFor(model => model.NetoAPagar, new
+                            {
+                                @class = "form-control",
+                                @readonly = "readonly",
+                                style = "font-size: 1.2rem; font-weight: bold; color: #28a745; background-color: #f0fff0;",
+                                id = "NetoAPagarDisplay"
+                            })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Observaciones)
+                    @Html.TextAreaFor(model => model.Observaciones, new
+                    {
+                        @class = "form-control",
+                        rows = "3",
+                        placeholder = "Observaciones adicionales..."
+                    })
+                    @Html.ValidationMessageFor(model => model.Observaciones, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger" id="btnConfirmar">
+                        <i class="fas fa-file-contract"></i> Confirmar Liquidación
+                    </button>
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function calcularLiquidacion() {
+                const salarioPendiente = parseFloat(document.getElementById('SalarioPendiente').value) || 0;
+                const vacacionesPendientes = parseFloat(document.getElementById('VacacionesPendientes').value) || 0;
+                const cesantias = parseFloat(document.getElementById('Cesantias').value) || 0;
+                const interesesCesantias = parseFloat(document.getElementById('InteresesCesantias').value) || 0;
+                const primaServicios = parseFloat(document.getElementById('PrimaServicios').value) || 0;
+                const indemnizacion = parseFloat(document.getElementById('Indemnizacion').value) || 0;
+                const retencionFuente = parseFloat(document.getElementById('RetencionFuente').value) || 0;
+
+                // Calcular total liquidación
+                const totalLiquidacion = salarioPendiente + vacacionesPendientes + cesantias +
+                                       interesesCesantias + primaServicios + indemnizacion;
+
+                // Actualizar campos hidden y display
+                document.getElementById('TotalLiquidacion').value = totalLiquidacion.toFixed(2);
+                document.getElementById('TotalLiquidacionDisplay').value = totalLiquidacion.toFixed(2);
+
+                // Calcular deducciones (4% salud y 4% pensión)
+                const saludDeducir = totalLiquidacion * 0.04;
+                const pensionDeducir = totalLiquidacion * 0.04;
+
+                document.getElementById('SaludDeducir').value = saludDeducir.toFixed(2);
+                document.getElementById('SaludDeducirDisplay').value = saludDeducir.toFixed(2);
+                document.getElementById('PensionDeducir').value = pensionDeducir.toFixed(2);
+                document.getElementById('PensionDeducirDisplay').value = pensionDeducir.toFixed(2);
+
+                // Calcular neto
+                const netoAPagar = totalLiquidacion - saludDeducir - pensionDeducir - retencionFuente;
+                document.getElementById('NetoAPagar').value = netoAPagar.toFixed(2);
+                document.getElementById('NetoAPagarDisplay').value = netoAPagar.toFixed(2);
+            }
+
+            // Recalcular cuando cambie la retención en la fuente
+            document.getElementById('RetencionFuente').addEventListener('input', calcularLiquidacion);
+
+            // Calcular inicialmente
+            calcularLiquidacion();
+
+            // Manejar envío del formulario
+            document.getElementById('liquidacionForm').addEventListener('submit', function(e) {
+                const btn = document.getElementById('btnConfirmar');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            });
+
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+    </script>
+}

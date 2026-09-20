@@ -1,0 +1,113 @@
+﻿@model IEnumerable<FullBike.Models.Cliente>
+@{
+    ViewBag.Title = "Clientes - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <h1><i class="fas fa-user-tie"></i> Gestión de Clientes</h1>
+            <p>Administra la base de datos de clientes</p>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Create", "Clientes")" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nuevo Cliente
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> @TempData["Mensaje"]
+        </div>
+    }
+
+    <!-- Estadísticas Rápidas -->
+    <div class="stats-overview">
+        <div class="stat-item">
+            <div class="stat-number">@Model.Count()</div>
+            <div class="stat-label">Total Clientes</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">@Model.Count(c => c.TipoCliente == "Premium")</div>
+            <div class="stat-label">Clientes Premium</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">@Model.Count(c => c.TipoCliente == "VIP")</div>
+            <div class="stat-label">Clientes VIP</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">@Model.Count(c => c.FechaRegistro.Date == DateTime.Today)</div>
+            <div class="stat-label">Nuevos Hoy</div>
+        </div>
+    </div>
+
+    <!-- Tabla de Clientes -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list"></i> Lista de Clientes</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Contacto</th>
+                            <th>Tipo</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="product-info">
+                                        <strong>@cliente.NombreCompleto</strong>
+                                        @if (!string.IsNullOrEmpty(cliente.Email))
+                                        {
+                                            <small>@cliente.Email</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>@cliente.Documento</td>
+                                <td>
+                                    <div class="product-info">
+                                        <small>@cliente.Telefono</small>
+                                        @if (!string.IsNullOrEmpty(cliente.Direccion))
+                                        {
+                                            <small>@cliente.Direccion</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge @(cliente.TipoCliente == "VIP" ? "badge-warning" : cliente.TipoCliente == "Premium" ? "badge-success" : "badge-primary")">
+                                        @cliente.TipoCliente
+                                    </span>
+                                </td>
+                                <td>@cliente.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="@Url.Action("Edit", "Clientes", new { id = cliente.Id })" class="btn btn-sm btn-outline" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", "Clientes", new { id = cliente.Id })" class="btn btn-sm btn-outline danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

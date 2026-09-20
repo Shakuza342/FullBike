@@ -1,0 +1,56 @@
+﻿@model FullBike.Models.Repuesto
+@{
+    ViewBag.Title = "Eliminar Producto - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-trash-alt"></i> Eliminar Producto</h2>
+            <p>Confirmar eliminación de producto del inventario</p>
+        </div>
+
+        <div class="delete-container">
+            <div class="delete-warning">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 15px;"></i>
+                <h3 style="color: #856404;">¿Está seguro de eliminar este producto?</h3>
+                <p style="color: #856404; margin: 10px 0;">Esta acción no se puede deshacer. El producto será eliminado permanentemente del sistema.</p>
+            </div>
+
+            <div style="text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h4>Información del Producto:</h4>
+                <p><strong>Nombre:</strong> @Model.Nombre</p>
+                <p><strong>Categoría:</strong> @Model.Categoria</p>
+                <p><strong>Precio:</strong> $@Model.Precio.ToString("N0")</p>
+                <p><strong>Stock:</strong> @Model.Stock unidades</p>
+                @if (!string.IsNullOrEmpty(Model.Descripcion))
+                {
+                    <p><strong>Descripción:</strong> @Model.Descripcion</p>
+                }
+            </div>
+
+            @using (Html.BeginForm("Delete", "Repuestos", new { id = Model.Id }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="delete-actions">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sí, Eliminar
+                    </button>
+                    <a href="@Url.Action("Index", "Repuestos")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

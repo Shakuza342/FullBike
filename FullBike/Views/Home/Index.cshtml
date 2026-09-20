@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "FullBike ERP - Sistema de Gestión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <i class="fas fa-motorcycle"></i>
+                <h1 class="hero-title">FullBike ERP</h1>
+            </div>
+            <p class="hero-subtitle">Sistema Integral de Gestión para Concesionarios</p>
+            <p class="hero-description">Controla tu inventario, ventas, clientes y proveedores en una sola plataforma</p>
+
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <div class="hero-actions">
+                    <a href="@Url.Action("Login", "Home")" class="btn btn-primary btn-large">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Iniciar Sesión
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="hero-actions">
+                    <a href="@Url.Action("Dashboard", "Home")" class="btn btn-primary btn-large">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Ir al Dashboard
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">¿Qué puedes hacer con FullBike?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <h3>Gestión de Inventario</h3>
+                    <p>Controla stock, precios y categorías de todos tus productos y repuestos</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Control de Proveedores</h3>
+                    <p>Gestiona proveedores, compras y relaciones comerciales</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Administración de Personal</h3>
+                    <p>Control de empleados, roles y permisos del sistema</p>
+                </div>
+            </div>
+        </div>
+    </section>
+}

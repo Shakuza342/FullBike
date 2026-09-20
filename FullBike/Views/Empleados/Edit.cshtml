@@ -1,0 +1,186 @@
+﻿@model FullBike.Models.Empleado
+@{
+    ViewBag.Title = "Editar Empleado - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-edit"></i> Editar Empleado</h2>
+            <p>Modificar información del empleado</p>
+        </div>
+
+        <div class="form-container">
+            @using (Html.BeginForm("Edit", "Empleados", FormMethod.Post, new { @class = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id)
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Nombre)
+                        @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del empleado", required = "required", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Apellido)
+                        @Html.TextBoxFor(model => model.Apellido, new { @class = "form-control", placeholder = "Apellido del empleado", required = "required", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Documento)
+                        @Html.TextBoxFor(model => model.Documento, new { @class = "form-control", placeholder = "Número de documento", required = "required", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Documento, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Cargo)
+                        @Html.DropDownListFor(model => model.Cargo, new SelectList(new[] {
+                            "Vendedor", "Mecánico", "Administrador", "Gerente", "Atención al Cliente"
+                        }), "Seleccionar cargo", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Cargo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email)
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "email@empleado.com", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefono)
+                        @Html.TextBoxFor(model => model.Telefono, new { @class = "form-control", placeholder = "Teléfono de contacto", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- NUEVOS CAMPOS PARA NÓMINA -->
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SalarioBase)
+                        @Html.TextBoxFor(model => model.SalarioBase, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00", required = "required" })
+                        @Html.ValidationMessageFor(model => model.SalarioBase, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TipoContrato)
+                        @Html.DropDownListFor(model => model.TipoContrato, new SelectList(new[] {
+                            "Indefinido", "Fijo", "ObraLabor", "Aprendizaje"
+                        }), "Seleccionar tipo", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.TipoContrato, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Estado)
+                        @Html.DropDownListFor(model => model.Estado, new SelectList(new[] {
+                            "Activo", "Vacaciones", "Incapacitado", "Retirado"
+                        }), "Seleccionar estado", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FechaContratacion)
+                        @Html.TextBoxFor(model => model.FechaContratacion, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                        @Html.ValidationMessageFor(model => model.FechaContratacion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Banco)
+                        @Html.TextBoxFor(model => model.Banco, new { @class = "form-control", placeholder = "Nombre del banco", maxlength = "50" })
+                        @Html.ValidationMessageFor(model => model.Banco, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NumeroCuenta)
+                        @Html.TextBoxFor(model => model.NumeroCuenta, new { @class = "form-control", placeholder = "Número de cuenta", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.NumeroCuenta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EPS)
+                        @Html.TextBoxFor(model => model.EPS, new { @class = "form-control", placeholder = "EPS del empleado", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.EPS, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Pension)
+                        @Html.TextBoxFor(model => model.Pension, new { @class = "form-control", placeholder = "Fondo de pensiones", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Pension, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ARL)
+                        @Html.TextBoxFor(model => model.ARL, new { @class = "form-control", placeholder = "ARL", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.ARL, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CajaCompensacion)
+                        @Html.TextBoxFor(model => model.CajaCompensacion, new { @class = "form-control", placeholder = "Caja de compensación", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.CajaCompensacion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Direccion)
+                    @Html.TextAreaFor(model => model.Direccion, new { @class = "form-control", rows = "2", placeholder = "Dirección del empleado", maxlength = "200" })
+                    @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Usuario)
+                        @Html.TextBoxFor(model => model.Usuario, new { @class = "form-control", placeholder = "Nombre de usuario para login", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PasswordHash)
+                        @Html.PasswordFor(model => model.PasswordHash, new { @class = "form-control", placeholder = "Dejar vacío para mantener la actual" })
+                        @Html.ValidationMessageFor(model => model.PasswordHash, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Actualizar Empleado
+                    </button>
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+
+                    <!-- Botón para liquidar contrato -->
+                    @if (Model.Estado != "Retirado" && Model.Activo)
+                    {
+                        <a href="@Url.Action("LiquidarContrato", "Nomina", new { empleadoId = Model.Id })" class="btn btn-warning">
+                            <i class="fas fa-file-contract"></i> Liquidar Contrato
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

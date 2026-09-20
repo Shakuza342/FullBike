@@ -1,0 +1,24 @@
+﻿@model FullBike.Models.Descuento
+@{
+    ViewBag.Title = "Eliminar Descuento";
+}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-trash-alt"></i> Eliminar Descuento</h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> ¿Está seguro de eliminar el descuento "<strong>@Model.Nombre</strong>"?
+            </div>
+            <p><strong>Tipo:</strong> @(Model.TipoDescuento == "Porcentaje" ? "Porcentaje" : "Monto fijo")</p>
+            <p><strong>Valor:</strong> @(Model.TipoDescuento == "Porcentaje" ? Model.Valor + "%" : Model.Valor.ToString("C0"))</p>
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Sí, eliminar</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>

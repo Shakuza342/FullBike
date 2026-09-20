@@ -1,0 +1,58 @@
+﻿@model FullBike.Models.Proveedor
+@{
+    ViewBag.Title = "Eliminar Proveedor - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-trash-alt"></i> Eliminar Proveedor</h2>
+            <p>Confirmar eliminación de proveedor del sistema</p>
+        </div>
+
+        <div class="delete-container">
+            <div class="delete-warning">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 15px;"></i>
+                <h3 style="color: #856404;">¿Está seguro de eliminar este proveedor?</h3>
+                <p style="color: #856404; margin: 10px 0;">Esta acción no se puede deshacer. El proveedor será marcado como inactivo en el sistema.</p>
+            </div>
+
+            <div style="text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h4>Información del Proveedor:</h4>
+                <p><strong>Razón Social:</strong> @Model.RazonSocial</p>
+                <p><strong>Contacto:</strong> @Model.Contacto</p>
+                <p><strong>Teléfono:</strong> @Model.Telefono</p>
+                <p><strong>Email:</strong> @Model.Email</p>
+                <p><strong>NIT:</strong> @Model.Nit</p>
+                <p><strong>Fecha Registro:</strong> @Model.FechaRegistro.ToString("dd/MM/yyyy")</p>
+                @if (!string.IsNullOrEmpty(Model.Direccion))
+                {
+                    <p><strong>Dirección:</strong> @Model.Direccion</p>
+                }
+            </div>
+
+            @using (Html.BeginForm("Delete", "Proveedores", new { id = Model.Id }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="delete-actions">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sí, Eliminar
+                    </button>
+                    <a href="@Url.Action("Index", "Proveedores")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

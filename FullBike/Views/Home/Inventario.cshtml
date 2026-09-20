@@ -1,0 +1,196 @@
+﻿@{
+    ViewBag.Title = "Inventario - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Gestión de Inventario</h2>
+            <p>Administra los productos y repuestos del concesionario</p>
+        </div>
+
+        <div class="table-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Lista de Productos</h3>
+                <button class="btn" onclick="abrirModalProducto()">➕ Agregar Producto</button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <!-- Los productos se cargarán dinámicamente -->
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Cargando productos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para agregar/editar producto -->
+<div id="modalProducto" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitulo">Agregar Producto</h3>
+            <button class="close" onclick="cerrarModalProducto()">&times;</button>
+        </div>
+        <form id="formProducto">
+            <input type="hidden" id="productoId">
+            <div class="form-group">
+                <label for="nombre">Nombre del Producto:</label>
+                <input type="text" id="nombre" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <select id="categoria" class="form-control" required>
+                    <option value="">Seleccionar categoría</option>
+                    <option value="Moto Nueva">Moto Nueva</option>
+                    <option value="Moto Usada">Moto Usada</option>
+                    <option value="Repuesto">Repuesto</option>
+                    <option value="Accesorio">Accesorio</option>
+                    <option value="Lubricante">Lubricante</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" id="precio" class="form-control" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="stock">Stock:</label>
+                <input type="number" id="stock" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" class="form-control" rows="3"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn">💾 Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalProducto()">❌ Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Datos de ejemplo
+    let productos = [
+        { id: 1, nombre: "Honda CB125F", categoria: "Moto Nueva", precio: 8500000, stock: 5, descripcion: "Moto nueva modelo 2024" },
+        { id: 2, nombre: "Yamaha YBR125", categoria: "Moto Nueva", precio: 7800000, stock: 3, descripcion: "Moto económica y confiable" },
+        { id: 3, nombre: "Kit de Transmisión", categoria: "Repuesto", precio: 250000, stock: 15, descripcion: "Kit completo de transmisión" },
+        { id: 4, nombre: "Frenos Delanteros", categoria: "Repuesto", precio: 180000, stock: 8, descripcion: "Juego de frenos delanteros" },
+        { id: 5, nombre: "Aceite Motor 10W-40", categoria: "Lubricante", precio: 45000, stock: 2, descripcion: "Aceite sintético para motor" },
+        { id: 6, nombre: "Cadena 428", categoria: "Repuesto", precio: 120000, stock: 0, descripcion: "Cadena de transmisión" }
+    ];
+
+    // Cargar productos en la tabla
+    function cargarProductos() {
+        const tbody = document.getElementById('tablaProductos');
+        tbody.innerHTML = '';
+
+        productos.forEach(producto => {
+            const estado = producto.stock > 0 ?
+                (producto.stock < 10 ? '<span style="color: orange;">⚠ Stock Bajo</span>' : '<span style="color: green;">✅ Disponible</span>') :
+                '<span style="color: red;">❌ Agotado</span>';
+
+            const row = `
+                <tr>
+                    <td>${producto.id}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.categoria}</td>
+                    <td>$${producto.precio.toLocaleString()}</td>
+                    <td>${producto.stock}</td>
+                    <td>${estado}</td>
+                    <td class="actions">
+                        <button class="btn btn-sm btn-edit" onclick="editarProducto(${producto.id})">✏️ Editar</button>
+                        <button class="btn btn-sm btn-delete" onclick="eliminarProducto(${producto.id})">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    // Funciones del modal
+    function abrirModalProducto() {
+        document.getElementById('modalTitulo').textContent = 'Agregar Producto';
+        document.getElementById('formProducto').reset();
+        document.getElementById('productoId').value = '';
+        document.getElementById('modalProducto').style.display = 'block';
+    }
+
+    function cerrarModalProducto() {
+        document.getElementById('modalProducto').style.display = 'none';
+    }
+
+    function editarProducto(id) {
+        const producto = productos.find(p => p.id === id);
+        if (producto) {
+            document.getElementById('modalTitulo').textContent = 'Editar Producto';
+            document.getElementById('productoId').value = producto.id;
+            document.getElementById('nombre').value = producto.nombre;
+            document.getElementById('categoria').value = producto.categoria;
+            document.getElementById('precio').value = producto.precio;
+            document.getElementById('stock').value = producto.stock;
+            document.getElementById('descripcion').value = producto.descripcion;
+            document.getElementById('modalProducto').style.display = 'block';
+        }
+    }
+
+    // Manejar envío del formulario
+    document.getElementById('formProducto').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const id = document.getElementById('productoId').value;
+        const producto = {
+            nombre: document.getElementById('nombre').value,
+            categoria: document.getElementById('categoria').value,
+            precio: parseFloat(document.getElementById('precio').value),
+            stock: parseInt(document.getElementById('stock').value),
+            descripcion: document.getElementById('descripcion').value
+        };
+
+        if (id) {
+            // Editar producto existente
+            const index = productos.findIndex(p => p.id === parseInt(id));
+            productos[index] = { ...productos[index], ...producto };
+        } else {
+            // Agregar nuevo producto
+            producto.id = productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1;
+            productos.push(producto);
+        }
+
+        cargarProductos();
+        cerrarModalProducto();
+        alert('✅ Producto guardado exitosamente');
+    });
+
+    function eliminarProducto(id) {
+        if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+            productos = productos.filter(p => p.id !== id);
+            cargarProductos();
+            alert('✅ Producto eliminado exitosamente');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si el usuario está logueado
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+            return;
+        }
+
+        cargarProductos();
+    });
+</script>

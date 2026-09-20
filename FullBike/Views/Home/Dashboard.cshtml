@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Dashboard - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard Principal</h2>
+            <p>Vista general del estado de tu concesionario</p>
+        </div>
+
+        <!-- Estadísticas DINÁMICAS -->
+        <div class="dashboard-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; border-left: 4px solid #3498db;">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: bold; color: #3498db; margin-bottom: 5px;">@ViewBag.TotalProductos</div>
+                <div class="stat-label" style="color: #666; font-size: 0.9rem; font-weight: 500;">Total Productos</div>
+                <small style="color: #999;">En inventario</small>
+            </div>
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; border-left: 4px solid #f39c12;">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: bold; color: #f39c12; margin-bottom: 5px;">@ViewBag.StockBajo</div>
+                <div class="stat-label" style="color: #666; font-size: 0.9rem; font-weight: 500;">Stock Bajo</div>
+                <small style="color: #999;">Necesitan reposición</small>
+            </div>
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; border-left: 4px solid #e74c3c;">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: bold; color: #e74c3c; margin-bottom: 5px;">@ViewBag.StockAgotado</div>
+                <div class="stat-label" style="color: #666; font-size: 0.9rem; font-weight: 500;">Stock Agotado</div>
+                <small style="color: #999;">Sin existencia</small>
+            </div>
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; border-left: 4px solid #27ae60;">
+                <div class="stat-number" style="font-size: 2.5rem; font-weight: bold; color: #27ae60; margin-bottom: 5px;">@ViewBag.ValorInventario</div>
+                <div class="stat-label" style="color: #666; font-size: 0.9rem; font-weight: 500;">Valor Inventario</div>
+                <small style="color: #999;">Valor total</small>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="table-container">
+            <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                <a href="@Url.Action("Create", "Repuestos")" class="btn" style="background: #3498db; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; text-align: center; transition: background 0.3s;">
+                    <i class="fas fa-plus"></i> Nuevo Producto
+                </a>
+                <a href="@Url.Action("Create", "Proveedores")" class="btn" style="background: #27ae60; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; text-align: center; transition: background 0.3s;">
+                    <i class="fas fa-truck"></i> Nuevo Proveedor
+                </a>
+                <a href="@Url.Action("Create", "Requestos")" class="btn" style="background: #f39c12; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; text-align: center; transition: background 0.3s;">
+                    <i class="fas fa-clipboard-list"></i> Nueva Solicitud
+                </a>
+            </div>
+        </div>
+
+        <!-- Módulos del Sistema -->
+        <div class="table-container">
+            <h3><i class="fas fa-th-large"></i> Módulos del Sistema</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <a href="@Url.Action("Index", "Repuestos")" class="module-card" style="text-decoration: none; color: inherit; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); transition: all 0.3s; text-align: center;">
+                    <div class="module-icon" style="font-size: 3rem; margin-bottom: 20px; color: #3498db;">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.4rem;">Inventario</h3>
+                    <p style="color: #666; margin-bottom: 20px; line-height: 1.5;">Gestión de productos y stock</p>
+                </a>
+
+                <a href="@Url.Action("Index", "Proveedores")" class="module-card" style="text-decoration: none; color: inherit; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); transition: all 0.3s; text-align: center;">
+                    <div class="module-icon" style="font-size: 3rem; margin-bottom: 20px; color: #3498db;">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.4rem;">Proveedores</h3>
+                    <p style="color: #666; margin-bottom: 20px; line-height: 1.5;">Gestión de proveedores</p>
+                </a>
+
+                <a href="@Url.Action("Index", "Requestos")" class="module-card" style="text-decoration: none; color: inherit; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); transition: all 0.3s; text-align: center;">
+                    <div class="module-icon" style="font-size: 3rem; margin-bottom: 20px; color: #3498db;">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.4rem;">Solicitudes</h3>
+                    <p style="color: #666; margin-bottom: 20px; line-height: 1.5;">Gestión de solicitudes</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Efectos hover para las tarjetas
+    document.addEventListener('DOMContentLoaded', function () {
+        const statCards = document.querySelectorAll('.stat-card');
+        const moduleCards = document.querySelectorAll('.module-card');
+
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        moduleCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 3px 15px rgba(0,0,0,0.1)';
+            });
+        });
+    });
+</script>

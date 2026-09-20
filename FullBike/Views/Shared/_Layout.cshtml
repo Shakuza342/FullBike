@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - FullBike ERP</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" />
+</head>
+<body>
+    <!-- Navbar Dinámico -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="@Url.Action("Index", "Home")" class="logo">
+                <i class="fas fa-motorcycle"></i>FullBike ERP
+            </a>
+
+            <div class="nav-links">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Usuario Logueado -->
+                    <a href="@Url.Action("Dashboard", "Home")" class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="@Url.Action("Index", "Repuestos")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Repuestos" ? "active" : "")">
+                        <i class="fas fa-boxes"></i> Inventario
+                    </a>
+                    <a href="@Url.Action("Index", "Proveedores")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Proveedores" ? "active" : "")">
+                        <i class="fas fa-truck"></i> Proveedores
+                    </a>
+                    <a href="@Url.Action("Index", "Empleados")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Empleados" ? "active" : "")">
+                        <i class="fas fa-users"></i> Empleados
+                    </a>
+                    <a href="@Url.Action("Index", "Clientes")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Clientes" ? "active" : "")">
+                        <i class="fas fa-user-tie"></i> Clientes
+                    </a>
+                    <a href="@Url.Action("Index", "Ventas")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Ventas" ? "active" : "")">
+                        <i class="fas fa-shopping-cart"></i> Ventas
+                    </a>
+                    <a href="@Url.Action("Index", "Descuentos")" class="nav-link">
+                        <i class="fas fa-tags"></i> Descuentos
+                    </a>
+
+                    <div class="user-menu">
+                        <span class="user-welcome"><i class="fas fa-user-circle"></i> @User.Identity.Name</span>
+                        <a href="@Url.Action("Logout", "Home")" class="nav-link logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Usuario No Logueado -->
+                    <a href="@Url.Action("Index", "Home")" class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                        <i class="fas fa-home"></i> Inicio
+                    </a>
+                    <a href="@Url.Action("Login", "Home")" class="nav-link login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">    
+            <p>&copy; @DateTime.Now.Year - FullBike ERP - Sistema de Gestión para Concesionarios</p>
+        </div>
+    </footer>
+
+    
+    
+    @RenderSection("scripts", required: false)
+</body>
+</html>

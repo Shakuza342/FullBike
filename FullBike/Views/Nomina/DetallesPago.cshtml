@@ -1,0 +1,180 @@
+﻿@model FullBike.Models.PagoNomina
+@{
+    ViewBag.Title = "Detalles de Pago - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-eye"></i> Detalles de Pago</h2>
+            <p>Información detallada del pago de nómina</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            </div>
+        }
+
+        <div class="details-container">
+            <div class="details-header">
+                <h3>Pago #@Model.Id</h3>
+                <div class="header-actions">
+                    <a href="@Url.Action("Index")" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+
+            <div class="details-content">
+                <!-- Información básica -->
+                <div class="details-section">
+                    <h4><i class="fas fa-info-circle"></i> Información Básica</h4>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Empleado:</label>
+                            <span>@(Model.Empleado?.NombreCompleto ?? "N/A")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Cargo:</label>
+                            <span>@(Model.Empleado?.Cargo ?? "N/A")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Periodo:</label>
+                            <span>@Model.PeriodoInicio.ToString("dd/MM/yyyy") - @Model.PeriodoFin.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Fecha de Pago:</label>
+                            <span>@Model.FechaPago.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Estado:</label>
+                            @if (Model.Estado == "Pagado")
+                            {
+                                <span class="estado-pagado">@Model.Estado</span>
+                            }
+                            else if (Model.Estado == "Pendiente")
+                            {
+                                <span class="estado-pendiente">@Model.Estado</span>
+                            }
+                            else
+                            {
+                                <span class="estado-anulado">@Model.Estado</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Devengados -->
+                <div class="details-section">
+                    <h4><i class="fas fa-plus-circle"></i> Devengados</h4>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Salario Básico:</label>
+                            <span class="monto-positivo">$@Model.SalarioBasico.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Horas Extras:</label>
+                            <span class="monto-positivo">$@Model.HorasExtras.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Bonificaciones:</label>
+                            <span class="monto-positivo">$@Model.Bonificaciones.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Comisiones:</label>
+                            <span class="monto-positivo">$@Model.Comisiones.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item total">
+                            <label><strong>Total Devengado:</strong></label>
+                            <span class="monto-positivo"><strong>$@Model.TotalDevengado.ToString("N0")</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deducciones -->
+                <div class="details-section">
+                    <h4><i class="fas fa-minus-circle"></i> Deducciones</h4>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Salud (4%):</label>
+                            <span class="monto-negativo">$@Model.SaludEmpleado.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Pensión (4%):</label>
+                            <span class="monto-negativo">$@Model.PensionEmpleado.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Retención en la Fuente:</label>
+                            <span class="monto-negativo">$@Model.RetencionFuente.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Préstamos:</label>
+                            <span class="monto-negativo">$@Model.Prestamos.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Otras Deducciones:</label>
+                            <span class="monto-negativo">$@Model.OtrasDeducciones.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item total">
+                            <label><strong>Total Deducciones:</strong></label>
+                            <span class="monto-negativo"><strong>$@Model.TotalDeducciones.ToString("N0")</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neto a Pagar -->
+                <div class="details-section total-section">
+                    <h4><i class="fas fa-dollar-sign"></i> Resumen Final</h4>
+                    <div class="details-grid">
+                        <div class="detail-item grand-total">
+                            <label><strong>Neto a Pagar:</strong></label>
+                            <span class="monto-total"><strong>$@Model.NetoAPagar.ToString("N0")</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aportes Empresa -->
+                <div class="details-section">
+                    <h4><i class="fas fa-building"></i> Aportes de la Empresa</h4>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Salud Empresa (8.5%):</label>
+                            <span>$@Model.SaludEmpresa.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Pensión Empresa (12%):</label>
+                            <span>$@Model.PensionEmpresa.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>ARL (0.522%):</label>
+                            <span>$@Model.ARLEmpresa.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Caja Compensación (4%):</label>
+                            <span>$@Model.CajaCompensacion.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>ICBF (3%):</label>
+                            <span>$@Model.ICBF.ToString("N0")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>SENA (2%):</label>
+                            <span>$@Model.SENA.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

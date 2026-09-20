@@ -1,0 +1,94 @@
+﻿@model FullBike.Models.Cliente
+@{
+    ViewBag.Title = "Crear Cliente - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-user-plus"></i> Crear Nuevo Cliente</h2>
+            <p>Agregar un nuevo cliente al sistema</p>
+        </div>
+
+        <div class="form-container">
+            @using (Html.BeginForm("Create", "Clientes", FormMethod.Post, new { @class = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Nombre)
+                        @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del cliente", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Apellido)
+                        @Html.TextBoxFor(model => model.Apellido, new { @class = "form-control", placeholder = "Apellido del cliente", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Documento)
+                        @Html.TextBoxFor(model => model.Documento, new { @class = "form-control", placeholder = "Número de documento", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Documento, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TipoCliente)
+                        @Html.DropDownListFor(model => model.TipoCliente, new SelectList(new[] {
+                            "Regular", "Premium", "Corporativo", "VIP"
+                        }), "Seleccionar tipo", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.TipoCliente, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email)
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "email@cliente.com" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefono)
+                        @Html.TextBoxFor(model => model.Telefono, new { @class = "form-control", placeholder = "Teléfono de contacto" })
+                        @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Direccion)
+                    @Html.TextAreaFor(model => model.Direccion, new { @class = "form-control", rows = "2", placeholder = "Dirección del cliente" })
+                    @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FechaNacimiento)
+                    @Html.TextBoxFor(model => model.FechaNacimiento, new { @class = "form-control", type = "date" })
+                    @Html.ValidationMessageFor(model => model.FechaNacimiento, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cliente
+                    </button>
+                    <a href="@Url.Action("Index", "Clientes")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

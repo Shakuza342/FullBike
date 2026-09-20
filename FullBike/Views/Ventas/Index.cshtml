@@ -1,0 +1,66 @@
+﻿@model IEnumerable<FullBike.Models.Venta>
+@{
+    ViewBag.Title = "Gestión de Ventas";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <h1><i class="fas fa-shopping-cart"></i> Ventas</h1>
+            <p>Historial de todas las transacciones</p>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Create")" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nueva Venta
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Empleado</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var venta in Model)
+                        {
+                            <tr>
+                                <td>@venta.Id</td>
+                                <td>@(venta.Cliente?.NombreCompleto ?? "N/A")</td>
+                                <td>@(venta.Empleado?.NombreCompleto ?? "N/A")</td>
+                                <td>@venta.FechaVenta.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="price">@venta.Total.ToString("C0")</td>
+                                <td><span class="status-badge @(venta.Estado == "Completada" ? "active" : "warning")">@venta.Estado</span></td>
+                                <td class="actions">
+                                    <a href="@Url.Action("Details", new { id = venta.Id })" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                    <a href="@Url.Action("Delete", new { id = venta.Id })" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta venta?')"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

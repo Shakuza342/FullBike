@@ -1,0 +1,78 @@
+﻿@model FullBike.Models.Proveedor
+@{
+    ViewBag.Title = "Crear Proveedor - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-plus-circle"></i> Crear Nuevo Proveedor</h2>
+            <p>Agregar un nuevo proveedor al sistema</p>
+        </div>
+
+        <div class="form-container">
+            @using (Html.BeginForm("Create", "Proveedores", FormMethod.Post, new { @class = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RazonSocial)
+                        @Html.TextBoxFor(model => model.RazonSocial, new { @class = "form-control", placeholder = "Razón social del proveedor", required = "required" })
+                        @Html.ValidationMessageFor(model => model.RazonSocial, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Nit)
+                        @Html.TextBoxFor(model => model.Nit, new { @class = "form-control", placeholder = "NIT del proveedor" })
+                        @Html.ValidationMessageFor(model => model.Nit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Contacto)
+                        @Html.TextBoxFor(model => model.Contacto, new { @class = "form-control", placeholder = "Persona de contacto", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Contacto, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefono)
+                        @Html.TextBoxFor(model => model.Telefono, new { @class = "form-control", placeholder = "Teléfono de contacto" })
+                        @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Email)
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "email@proveedor.com" })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Direccion)
+                    @Html.TextAreaFor(model => model.Direccion, new { @class = "form-control", rows = "2", placeholder = "Dirección del proveedor" })
+                    @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Proveedor
+                    </button>
+                    <a href="@Url.Action("Index", "Proveedores")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>

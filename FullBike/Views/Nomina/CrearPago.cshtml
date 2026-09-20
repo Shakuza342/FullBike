@@ -1,0 +1,391 @@
+﻿@model FullBike.Models.PagoNomina
+@{
+    ViewBag.Title = "Crear Pago de Nómina - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-money-bill"></i> Crear Pago de Nómina</h2>
+            <p>Registrar pago para: <strong>@Model.Empleado.NombreCompleto</strong></p>
+            <p><strong>Salario Base:</strong> $@Model.SalarioBasico.ToString("N0")</p>
+        </div>
+
+        <!-- MOSTRAR ERRORES DETALLADOS -->
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Error:</strong> @TempData["Error"]
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Errores de validación:</strong>
+                <ul>
+                    @foreach (var key in ViewData.ModelState.Keys)
+                    {
+                        foreach (var error in ViewData.ModelState[key].Errors)
+                        {
+                            <li>@key: @error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="form-container">
+            @using (Html.BeginForm("CrearPago", "Nomina", FormMethod.Post, new { @class = "form", id = "pagoForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Campos ocultos REQUERIDOS -->
+                @Html.HiddenFor(model => model.EmpleadoId)
+                @Html.HiddenFor(model => model.SalarioBasico)
+                @Html.HiddenFor(model => model.Estado)
+                @Html.HiddenFor(model => model.TotalDevengado, new { id = "TotalDevengado" })
+                @Html.HiddenFor(model => model.TotalDeducciones, new { id = "TotalDeducciones" })
+                @Html.HiddenFor(model => model.NetoAPagar, new { id = "NetoAPagar" })
+                @Html.HiddenFor(model => model.SaludEmpleado, new { id = "SaludEmpleado" })
+                @Html.HiddenFor(model => model.PensionEmpleado, new { id = "PensionEmpleado" })
+                @Html.HiddenFor(model => model.SaludEmpresa, new { id = "SaludEmpresa" })
+                @Html.HiddenFor(model => model.PensionEmpresa, new { id = "PensionEmpresa" })
+                @Html.HiddenFor(model => model.ARLEmpresa, new { id = "ARLEmpresa" })
+                @Html.HiddenFor(model => model.CajaCompensacion, new { id = "CajaCompensacion" })
+                @Html.HiddenFor(model => model.ICBF, new { id = "ICBF" })
+                @Html.HiddenFor(model => model.SENA, new { id = "SENA" })
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoInicio)
+                        @Html.TextBoxFor(model => model.PeriodoInicio, "{0:yyyy-MM-dd}", new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            required = "required",
+                            id = "PeriodoInicio"
+                        })
+                        @Html.ValidationMessageFor(model => model.PeriodoInicio, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PeriodoFin)
+                        @Html.TextBoxFor(model => model.PeriodoFin, "{0:yyyy-MM-dd}", new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            required = "required",
+                            id = "PeriodoFin"
+                        })
+                        @Html.ValidationMessageFor(model => model.PeriodoFin, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FechaPago)
+                        @Html.TextBoxFor(model => model.FechaPago, "{0:yyyy-MM-dd}", new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            required = "required",
+                            id = "FechaPago"
+                        })
+                        @Html.ValidationMessageFor(model => model.FechaPago, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Salario Base (Solo lectura)</label>
+                        @Html.TextBox("SalarioBasicoDisplay", Model.SalarioBasico.ToString("N0"), new
+                        {
+                            @class = "form-control",
+                            @readonly = "readonly",
+                            style = "background-color: #f8f9fa; font-weight: bold;",
+                            id = "SalarioBasicoDisplay"
+                        })
+                        <small class="text-muted">Salario base del empleado</small>
+                    </div>
+                </div>
+
+                <!-- Devengados -->
+                <div class="calculation-section">
+                    <h4><i class="fas fa-plus-circle"></i> Devengados</h4>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.HorasExtras)
+                            @Html.TextBoxFor(model => model.HorasExtras, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "1",
+                                min = "0",
+                                value = "0",
+                                id = "HorasExtras"
+                            })
+                            <small class="text-muted">Horas extras diurnas (25% recargo)</small>
+                            @Html.ValidationMessageFor(model => model.HorasExtras, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Bonificaciones)
+                            @Html.TextBoxFor(model => model.Bonificaciones, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                min = "0",
+                                value = "0",
+                                id = "Bonificaciones"
+                            })
+                            @Html.ValidationMessageFor(model => model.Bonificaciones, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Comisiones)
+                            @Html.TextBoxFor(model => model.Comisiones, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                min = "0",
+                                value = "0",
+                                id = "Comisiones"
+                            })
+                            @Html.ValidationMessageFor(model => model.Comisiones, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Total Devengado (Calculado)</label>
+                            <input type="text" class="form-control" readonly
+                                   style="font-weight: bold; background-color: #e8f5e8;"
+                                   id="TotalDevengadoDisplay" value="0">
+                            <small class="text-muted">Calculado automáticamente</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deducciones -->
+                <div class="calculation-section">
+                    <h4><i class="fas fa-minus-circle"></i> Deducciones Legales</h4>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Salud (4%)</label>
+                            <input type="text" class="form-control" readonly
+                                   style="background-color: #f8f9fa;"
+                                   id="SaludEmpleadoDisplay" value="0">
+                            <small class="text-muted">Calculado automáticamente</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pensión (4%)</label>
+                            <input type="text" class="form-control" readonly
+                                   style="background-color: #f8f9fa;"
+                                   id="PensionEmpleadoDisplay" value="0">
+                            <small class="text-muted">Calculado automáticamente</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RetencionFuente)
+                            @Html.TextBoxFor(model => model.RetencionFuente, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                min = "0",
+                                value = "0",
+                                id = "RetencionFuente"
+                            })
+                            @Html.ValidationMessageFor(model => model.RetencionFuente, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Prestamos)
+                            @Html.TextBoxFor(model => model.Prestamos, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                min = "0",
+                                value = "0",
+                                id = "Prestamos"
+                            })
+                            @Html.ValidationMessageFor(model => model.Prestamos, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.OtrasDeducciones)
+                            @Html.TextBoxFor(model => model.OtrasDeducciones, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                step = "0.01",
+                                min = "0",
+                                value = "0",
+                                id = "OtrasDeducciones"
+                            })
+                            @Html.ValidationMessageFor(model => model.OtrasDeducciones, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group">
+                            <label>Total Deducciones (Calculado)</label>
+                            <input type="text" class="form-control" readonly
+                                   style="font-weight: bold; background-color: #ffeaea;"
+                                   id="TotalDeduccionesDisplay" value="0">
+                            <small class="text-muted">Calculado automáticamente</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neto a Pagar -->
+                <div class="calculation-section calculation-total">
+                    <h4><i class="fas fa-calculator"></i> Resumen Final</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><strong>Neto a Pagar (Calculado)</strong></label>
+                            <input type="text" class="form-control" readonly
+                                   style="font-size: 1.3rem; font-weight: bold; color: #28a745; background-color: #f0fff0;"
+                                   id="NetoAPagarDisplay" value="0">
+                            <small class="text-muted">Total a pagar al empleado</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success" id="btnGuardar">
+                        <i class="fas fa-save"></i> Guardar Pago
+                    </button>
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Función para calcular nómina
+        function calcularNomina() {
+            console.log("Calculando nómina...");
+
+            const salarioBasico = parseFloat(@Model.SalarioBasico) || 0;
+            const horasExtras = parseInt(document.getElementById('HorasExtras').value) || 0;
+            const bonificaciones = parseFloat(document.getElementById('Bonificaciones').value) || 0;
+            const comisiones = parseFloat(document.getElementById('Comisiones').value) || 0;
+            const retencionFuente = parseFloat(document.getElementById('RetencionFuente').value) || 0;
+            const prestamos = parseFloat(document.getElementById('Prestamos').value) || 0;
+            const otrasDeducciones = parseFloat(document.getElementById('OtrasDeducciones').value) || 0;
+
+            console.log("Valores:", { salarioBasico, horasExtras, bonificaciones, comisiones });
+
+            // Calcular horas extras según normativa colombiana (25% recargo diurno)
+            const valorHoraNormal = salarioBasico / 240; // 240 horas mensuales
+            const valorHoraExtra = valorHoraNormal * 1.25; // 25% recargo
+            const totalHorasExtras = horasExtras * valorHoraExtra;
+
+            // Calcular devengados
+            const totalDevengado = salarioBasico + totalHorasExtras + bonificaciones + comisiones;
+
+            // Actualizar campos hidden y display
+            document.getElementById('TotalDevengado').value = totalDevengado.toFixed(2);
+            document.getElementById('TotalDevengadoDisplay').value = formatCurrency(totalDevengado);
+
+            // Calcular deducciones según normativa colombiana
+            const baseCotizacion = salarioBasico * 0.4; // Base del 40% para seguridad social
+            const saludEmpleado = baseCotizacion * 0.04; // 4% salud
+            const pensionEmpleado = baseCotizacion * 0.04; // 4% pensión
+
+            // Actualizar campos hidden y display
+            document.getElementById('SaludEmpleado').value = saludEmpleado.toFixed(2);
+            document.getElementById('SaludEmpleadoDisplay').value = formatCurrency(saludEmpleado);
+            document.getElementById('PensionEmpleado').value = pensionEmpleado.toFixed(2);
+            document.getElementById('PensionEmpleadoDisplay').value = formatCurrency(pensionEmpleado);
+
+            const totalDeducciones = saludEmpleado + pensionEmpleado + retencionFuente + prestamos + otrasDeducciones;
+            document.getElementById('TotalDeducciones').value = totalDeducciones.toFixed(2);
+            document.getElementById('TotalDeduccionesDisplay').value = formatCurrency(totalDeducciones);
+
+            // Calcular neto
+            const netoAPagar = totalDevengado - totalDeducciones;
+            document.getElementById('NetoAPagar').value = netoAPagar.toFixed(2);
+            document.getElementById('NetoAPagarDisplay').value = formatCurrency(netoAPagar);
+
+            console.log("Cálculo completado");
+        }
+
+        // Función para formatear moneda
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&,');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Página cargada - Configurando eventos");
+
+            // Establecer fechas por defecto
+            const today = new Date().toISOString().split('T')[0];
+            const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+            const lastDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
+
+            document.getElementById('PeriodoInicio').value = firstDay;
+            document.getElementById('PeriodoFin').value = lastDay;
+            document.getElementById('FechaPago').value = today;
+
+            // Calcular inicialmente
+            calcularNomina();
+
+            // Agregar event listeners a todos los campos numéricos
+            const camposCalculo = ['HorasExtras', 'Bonificaciones', 'Comisiones', 'RetencionFuente', 'Prestamos', 'OtrasDeducciones'];
+            camposCalculo.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento) {
+                    elemento.addEventListener('input', calcularNomina);
+                    console.log(`Event listener agregado a: ${campo}`);
+                }
+            });
+
+            // Manejar envío del formulario
+            const form = document.getElementById('pagoForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log("Formulario enviándose...");
+
+                    // Validaciones básicas
+                    const periodoInicio = document.getElementById('PeriodoInicio').value;
+                    const periodoFin = document.getElementById('PeriodoFin').value;
+                    const fechaPago = document.getElementById('FechaPago').value;
+
+                    if (!periodoInicio || !periodoFin || !fechaPago) {
+                        e.preventDefault();
+                        alert('Por favor complete todas las fechas requeridas');
+                        return;
+                    }
+
+                    // Deshabilitar botón para evitar doble envío
+                    const btn = document.getElementById('btnGuardar');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+                    console.log("Formulario válido, enviando...");
+                });
+            }
+
+            // Verificar autenticación
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+    </script>
+}

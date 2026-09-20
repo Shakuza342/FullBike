@@ -1,0 +1,56 @@
+﻿@model FullBike.Models.Venta
+@{
+    ViewBag.Title = "Detalle Venta #" + Model.Id;
+}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-receipt"></i> Venta #@Model.Id</h1>
+        <div>
+            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</a>
+            <a href="@Url.Action("Index")" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Información general</h5>
+                    <p><strong>Cliente:</strong> @(Model.Cliente?.NombreCompleto ?? "N/A")</p>
+                    <p><strong>Empleado:</strong> @(Model.Empleado?.NombreCompleto ?? "N/A")</p>
+                    <p><strong>Fecha:</strong> @Model.FechaVenta.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Estado:</strong> <span class="status-badge @(Model.Estado == "Completada" ? "active" : "warning")">@Model.Estado</span></p>
+                    <p><strong>Método de pago:</strong> @Model.MetodoPago</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Totales</h5>
+                    <p><strong>Subtotal:</strong> @Model.Subtotal.ToString("C0")</p>
+                    <p><strong>IVA:</strong> @Model.Iva.ToString("C0")</p>
+                    <p><strong>Descuento:</strong> @Model.Descuento.ToString("C0")</p>
+                    <p><strong>Total:</strong> <span class="price">@Model.Total.ToString("C0")</span></p>
+                    <p><strong>Observaciones:</strong> @Model.Observaciones</p>
+                </div>
+            </div>
+            <hr />
+            <h5><i class="fas fa-list"></i> Productos</h5>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Descuento</th><th>Subtotal</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var det in Model.DetallesVenta)
+                        {
+                            <tr>
+                                <td>@(det.Repuesto != null ? det.Repuesto.Nombre : "N/D")</td>
+                                <td>@det.Cantidad</td>
+                                <td>@det.PrecioUnitario.ToString("C0")</td>
+                                <td>@det.Descuento.ToString("C0")</td>
+                                <td>@det.Total.ToString("C0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

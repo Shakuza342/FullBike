@@ -1,0 +1,23 @@
+﻿@model FullBike.Models.Descuento
+@{
+    ViewBag.Title = "Detalle Descuento";
+}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-tag"></i> @Model.Nombre</h1>
+        <div>
+            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</a>
+            <a href="@Url.Action("Index")" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Tipo:</strong> @(Model.TipoDescuento == "Porcentaje" ? "Porcentaje" : "Monto fijo")</p>
+            <p><strong>Valor:</strong> @(Model.TipoDescuento == "Porcentaje" ? Model.Valor + "%" : Model.Valor.ToString("C0"))</p>
+            <p><strong>Monto mínimo:</strong> @(Model.MontoMinimo?.ToString("C0") ?? "Sin mínimo")</p>
+            <p><strong>Vigencia:</strong> @Model.FechaInicio.ToString("dd/MM/yyyy") - @(Model.FechaFin?.ToString("dd/MM/yyyy") ?? "Indefinido")</p>
+            <p><strong>Activo:</strong> @(Model.Activo ? "Sí" : "No")</p>
+            <p><strong>Descripción:</strong> @Model.Descripcion</p>
+        </div>
+    </div>
+</div>

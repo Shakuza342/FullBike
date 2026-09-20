@@ -1,0 +1,233 @@
+﻿@model FullBike.Models.Empleado
+@{
+    ViewBag.Title = "Crear Empleado - FullBike ERP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2><i class="fas fa-user-plus"></i> Crear Nuevo Empleado</h2>
+            <p>Agregar un nuevo empleado al sistema</p>
+        </div>
+
+        <div class="form-container">
+            @using (Html.BeginForm("Create", "Empleados", FormMethod.Post, new { @class = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Información Personal -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-user"></i> Información Personal
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Nombre)
+                        @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del empleado", required = "required", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Apellido)
+                        @Html.TextBoxFor(model => model.Apellido, new { @class = "form-control", placeholder = "Apellido del empleado", required = "required", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Documento)
+                        @Html.TextBoxFor(model => model.Documento, new { @class = "form-control", placeholder = "Número de documento", required = "required", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Documento, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email)
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "email@empleado.com", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefono)
+                        @Html.TextBoxFor(model => model.Telefono, new { @class = "form-control", placeholder = "Teléfono de contacto", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                    
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Direccion)
+                    @Html.TextAreaFor(model => model.Direccion, new { @class = "form-control", rows = "2", placeholder = "Dirección del empleado", maxlength = "200" })
+                    @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- Información Laboral -->
+                <h4 style="color: var(--primary-color); margin: 2rem 0 1.5rem 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-briefcase"></i> Información Laboral
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Cargo)
+                        @Html.DropDownListFor(model => model.Cargo, new SelectList(new[] {
+                            "Vendedor", "Mecánico", "Administrador", "Gerente", "Atención al Cliente",
+                            "Contador", "Recursos Humanos", "Marketing", "Técnico"
+                        }), "Seleccionar cargo", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Cargo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TipoContrato)
+                        @Html.DropDownListFor(model => model.TipoContrato, new SelectList(new[] {
+                            "Indefinido", "Fijo", "ObraLabor", "Aprendizaje", "Prestación Servicios"
+                        }), "Seleccionar tipo", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.TipoContrato, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FechaContratacion)
+                        @Html.TextBoxFor(model => model.FechaContratacion, new { @class = "form-control", type = "date", required = "required" })
+                        @Html.ValidationMessageFor(model => model.FechaContratacion, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SalarioBase)
+                        @Html.TextBoxFor(model => model.SalarioBase, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00", required = "required", min = "0" })
+                        @Html.ValidationMessageFor(model => model.SalarioBase, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Estado)
+                        @Html.DropDownListFor(model => model.Estado, new SelectList(new[] {
+                            "Activo", "Vacaciones", "Incapacitado", "Licencia"
+                        }), "Seleccionar estado", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- Información Bancaria -->
+                <h4 style="color: var(--primary-color); margin: 2rem 0 1.5rem 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-university"></i> Información Bancaria
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Banco)
+                        @Html.TextBoxFor(model => model.Banco, new { @class = "form-control", placeholder = "Nombre del banco", maxlength = "50" })
+                        @Html.ValidationMessageFor(model => model.Banco, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NumeroCuenta)
+                        @Html.TextBoxFor(model => model.NumeroCuenta, new { @class = "form-control", placeholder = "Número de cuenta", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.NumeroCuenta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TipoCuenta)
+                        @Html.DropDownListFor(model => model.TipoCuenta, new SelectList(new[] {
+                            "Ahorros", "Corriente"
+                        }), "Seleccionar tipo de cuenta", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TipoCuenta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- Seguridad Social -->
+                <h4 style="color: var(--primary-color); margin: 2rem 0 1.5rem 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-shield-alt"></i> Seguridad Social
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EPS)
+                        @Html.TextBoxFor(model => model.EPS, new { @class = "form-control", placeholder = "EPS del empleado", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.EPS, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Pension)
+                        @Html.TextBoxFor(model => model.Pension, new { @class = "form-control", placeholder = "Fondo de pensiones", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.Pension, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ARL)
+                        @Html.TextBoxFor(model => model.ARL, new { @class = "form-control", placeholder = "ARL", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.ARL, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CajaCompensacion)
+                        @Html.TextBoxFor(model => model.CajaCompensacion, new { @class = "form-control", placeholder = "Caja de compensación", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.CajaCompensacion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- Acceso al Sistema -->
+                <h4 style="color: var(--primary-color); margin: 2rem 0 1.5rem 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-key"></i> Acceso al Sistema
+                </h4>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Usuario)
+                        @Html.TextBoxFor(model => model.Usuario, new { @class = "form-control", placeholder = "Nombre de usuario para login", maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PasswordHash)
+                        @Html.PasswordFor(model => model.PasswordHash, new { @class = "form-control", placeholder = "Contraseña para login" })
+                        @Html.ValidationMessageFor(model => model.PasswordHash, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Rol)
+                        @Html.DropDownListFor(model => model.Rol, new SelectList(new[] {
+                            "Empleado", "Admin", "Gerente", "Supervisor"
+                        }), "Seleccionar rol", new { @class = "form-control", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Rol, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Empleado
+                    </button>
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-back">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Establecer fecha de contratación por defecto a hoy
+        var fechaHoy = new Date().toISOString().split('T')[0];
+        document.getElementById('FechaContratacion').value = fechaHoy;
+
+        // Validación de login
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+    });
+</script>
